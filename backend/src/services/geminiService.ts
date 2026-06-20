@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI, type GenerativeModel } from "@google/generative-ai";
 import type { Ticket, TicketCategory, TicketStatus } from "../db/schema.js";
 
-const fallbackModelNames = ["gemini-2.5-flash", "gemini-flash-latest"];
+const defaultModelName = "gemini-2.5-flash-lite";
+const fallbackModelNames = [defaultModelName, "gemini-flash-latest", "gemini-2.5-flash"];
 const requestTimeoutMs = 10_000;
 const categories = ["IT", "HR", "Finance", "Admin"] as const;
 
@@ -55,8 +56,21 @@ async function withTimeout<T>(operation: Promise<T>, timeoutMs = requestTimeoutM
   }
 }
 
+function isTimeoutError(error: unknown): boolean {
+  return error instanceof Error && error.message.toLowerCase().includes("timed out");
+}
+
+function isModelSelectionError(error: unknown): boolean {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  const message = error.message.toLowerCase();
+  return message.includes("not found") || message.includes("not supported") || message.includes("404");
+}
+
 async function generateText(prompt: string): Promise<string> {
-  const configuredModelName = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+  const configuredModelName = process.env.GEMINI_MODEL ?? defaultModelName;
   const modelsToTry = Array.from(new Set([configuredModelName, ...fallbackModelNames]));
   let lastError: unknown;
 
@@ -66,7 +80,11 @@ async function generateText(prompt: string): Promise<string> {
       return result.response.text().trim();
     } catch (error) {
       lastError = error;
-      console.warn(`Gemini model ${modelName} failed; trying fallback if available`, error);
+      console.warn(`Gemini model ${modelName} failed`, error);
+
+      if (isTimeoutError(error) || !isModelSelectionError(error)) {
+        break;
+      }
     }
   }
 
