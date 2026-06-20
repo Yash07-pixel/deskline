@@ -22,7 +22,9 @@ if (process.env.SEED_SAMPLE_DATA === "true") {
 type SeedTicket = Omit<Ticket, "id" | "internal_notes" | "satisfaction_rating">;
 
 function seedTickets(): void {
-  const existingCount = db.prepare("SELECT COUNT(*) as count FROM tickets").get() as { count: number };
+  const existingCount = db.prepare("SELECT COUNT(*) as count FROM tickets WHERE raised_by = 'Sample Data'").get() as {
+    count: number;
+  };
 
   if (existingCount.count > 0) {
     return;
@@ -35,7 +37,7 @@ function seedTickets(): void {
       category: "IT",
       urgency: "High",
       status: "Resolved",
-      raised_by: "Aarav Mehta",
+      raised_by: "Sample Data",
       created_at: "2026-04-03T09:15:00.000Z",
       updated_at: "2026-04-03T13:40:00.000Z",
       agent_response: "Reset the VPN profile and refreshed device certificates. User confirmed access is restored."
@@ -46,7 +48,7 @@ function seedTickets(): void {
       category: "Finance",
       urgency: "Medium",
       status: "Closed",
-      raised_by: "Neha Kapoor",
+      raised_by: "Sample Data",
       created_at: "2026-05-31T06:20:00.000Z",
       updated_at: "2026-06-01T10:05:00.000Z",
       agent_response: "Regenerated the payslip and confirmed it is visible in the portal."
@@ -57,7 +59,7 @@ function seedTickets(): void {
       category: "Admin",
       urgency: "Medium",
       status: "In Progress",
-      raised_by: "Riya Shah",
+      raised_by: "Sample Data",
       created_at: "2026-06-12T11:10:00.000Z",
       updated_at: "2026-06-15T08:30:00.000Z",
       agent_response: "Procurement request approved. Awaiting vendor delivery."
@@ -68,7 +70,7 @@ function seedTickets(): void {
       category: "HR",
       urgency: "Medium",
       status: "Resolved",
-      raised_by: "Karan Iyer",
+      raised_by: "Sample Data",
       created_at: "2026-05-10T08:45:00.000Z",
       updated_at: "2026-05-11T12:10:00.000Z",
       agent_response: "Synced leave records from the previous reporting unit and corrected the balance."
@@ -79,7 +81,7 @@ function seedTickets(): void {
       category: "IT",
       urgency: "High",
       status: "Closed",
-      raised_by: "Vikram Rao",
+      raised_by: "Sample Data",
       created_at: "2026-03-18T10:25:00.000Z",
       updated_at: "2026-03-19T15:55:00.000Z",
       agent_response: "Battery health failed diagnostics. Replaced battery and verified normal runtime."
@@ -90,7 +92,7 @@ function seedTickets(): void {
       category: "Finance",
       urgency: "Low",
       status: "Resolved",
-      raised_by: "Sanya Nair",
+      raised_by: "Sample Data",
       created_at: "2026-04-22T07:35:00.000Z",
       updated_at: "2026-04-24T09:00:00.000Z",
       agent_response: "Expense was missing manager approval. Approval obtained and payment queued."
@@ -101,7 +103,7 @@ function seedTickets(): void {
       category: "Admin",
       urgency: "High",
       status: "Resolved",
-      raised_by: "Manish Jain",
+      raised_by: "Sample Data",
       created_at: "2026-05-06T04:50:00.000Z",
       updated_at: "2026-05-06T07:15:00.000Z",
       agent_response: "Reactivated access profile and replaced worn card sleeve."
@@ -112,7 +114,7 @@ function seedTickets(): void {
       category: "Finance",
       urgency: "Medium",
       status: "Closed",
-      raised_by: "Priya Menon",
+      raised_by: "Sample Data",
       created_at: "2026-02-15T12:05:00.000Z",
       updated_at: "2026-02-16T11:30:00.000Z",
       agent_response: "Fixed a sync issue between payroll and finance portal records."
@@ -123,7 +125,7 @@ function seedTickets(): void {
       category: "HR",
       urgency: "Low",
       status: "Resolved",
-      raised_by: "Ananya Sen",
+      raised_by: "Sample Data",
       created_at: "2026-01-09T09:00:00.000Z",
       updated_at: "2026-01-09T14:45:00.000Z",
       agent_response: "Assigned the correct onboarding template for the role."
@@ -134,7 +136,7 @@ function seedTickets(): void {
       category: "IT",
       urgency: "Medium",
       status: "Closed",
-      raised_by: "Deepak Verma",
+      raised_by: "Sample Data",
       created_at: "2026-04-08T05:30:00.000Z",
       updated_at: "2026-04-08T08:20:00.000Z",
       agent_response: "Cleared print queue, updated network mapping, and restarted the printer."
@@ -145,7 +147,7 @@ function seedTickets(): void {
       category: "Admin",
       urgency: "Low",
       status: "Resolved",
-      raised_by: "Meera Thomas",
+      raised_by: "Sample Data",
       created_at: "2026-05-18T09:40:00.000Z",
       updated_at: "2026-05-18T10:25:00.000Z",
       agent_response: "Removed duplicate calendar resource entry and notified both teams."
@@ -156,7 +158,7 @@ function seedTickets(): void {
       category: "HR",
       urgency: "Medium",
       status: "Closed",
-      raised_by: "Aditya Kulkarni",
+      raised_by: "Sample Data",
       created_at: "2026-03-02T06:50:00.000Z",
       updated_at: "2026-03-04T09:35:00.000Z",
       agent_response: "Benefits vendor confirmed enrollment and portal visibility was restored."
@@ -167,7 +169,7 @@ function seedTickets(): void {
       category: "IT",
       urgency: "High",
       status: "Resolved",
-      raised_by: "Farah Khan",
+      raised_by: "Sample Data",
       created_at: "2026-06-05T10:00:00.000Z",
       updated_at: "2026-06-05T16:10:00.000Z",
       agent_response: "Updated group membership based on the new role."
@@ -178,7 +180,7 @@ function seedTickets(): void {
       category: "Admin",
       urgency: "Low",
       status: "Closed",
-      raised_by: "Nikhil Bansal",
+      raised_by: "Sample Data",
       created_at: "2026-02-28T11:25:00.000Z",
       updated_at: "2026-03-01T08:15:00.000Z",
       agent_response: "Facilities replaced the chair with a serviced unit."
@@ -189,7 +191,7 @@ function seedTickets(): void {
       category: "Finance",
       urgency: "Medium",
       status: "Open",
-      raised_by: "Tanvi Gupta",
+      raised_by: "Sample Data",
       created_at: "2026-06-18T07:05:00.000Z",
       updated_at: "2026-06-18T07:05:00.000Z",
       agent_response: null
@@ -200,7 +202,7 @@ function seedTickets(): void {
       category: "HR",
       urgency: "Low",
       status: "Resolved",
-      raised_by: "Ishaan Bose",
+      raised_by: "Sample Data",
       created_at: "2026-04-14T12:35:00.000Z",
       updated_at: "2026-04-15T05:45:00.000Z",
       agent_response: "Updated the policy link to the current document repository."
@@ -211,7 +213,7 @@ function seedTickets(): void {
       category: "IT",
       urgency: "Critical",
       status: "In Progress",
-      raised_by: "Kabir Malhotra",
+      raised_by: "Sample Data",
       created_at: "2026-06-17T03:25:00.000Z",
       updated_at: "2026-06-18T13:20:00.000Z",
       agent_response: "Session tokens were cleared. Identity provider logs are under review."
@@ -222,7 +224,7 @@ function seedTickets(): void {
       category: "Finance",
       urgency: "High",
       status: "Closed",
-      raised_by: "Pooja Reddy",
+      raised_by: "Sample Data",
       created_at: "2026-06-02T08:10:00.000Z",
       updated_at: "2026-06-03T06:55:00.000Z",
       agent_response: "Published corrected Form 16 files after payroll vendor reprocessing."
@@ -262,6 +264,31 @@ function seedTickets(): void {
     for (const ticket of seedData) {
       const result = insertTicket.run(ticket);
       const ticketId = Number(result.lastInsertRowid);
+      db.prepare(
+        `
+          INSERT INTO ticket_events (ticket_id, event_type, message, created_at)
+          VALUES (?, 'created', ?, ?)
+        `
+      ).run(ticketId, `Ticket created with ${ticket.urgency} urgency in ${ticket.category}.`, ticket.created_at);
+
+      if (ticket.status !== "Open") {
+        db.prepare(
+          `
+            INSERT INTO ticket_events (ticket_id, event_type, message, created_at)
+            VALUES (?, 'status_changed', ?, ?)
+          `
+        ).run(ticketId, `Status changed from Open to ${ticket.status}.`, ticket.updated_at);
+      }
+
+      if (ticket.agent_response) {
+        db.prepare(
+          `
+            INSERT INTO ticket_events (ticket_id, event_type, message, created_at)
+            VALUES (?, 'response_added', 'Agent response added.', ?)
+          `
+        ).run(ticketId, ticket.updated_at);
+      }
+
       const message =
         ticket.status === "Open" || ticket.status === "In Progress"
           ? `Ticket "${ticket.title}" is awaiting agent action.`
