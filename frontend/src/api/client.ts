@@ -10,8 +10,19 @@ import type {
   UpdateTicketStatusInput
 } from "../types";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.PROD ? "https://deskline.onrender.com/api" : "/api");
+function normalizeApiBaseUrl(value: string): string {
+  const baseUrl = value.replace(/\/$/, "");
+
+  if (baseUrl === "/api" || baseUrl.endsWith("/api")) {
+    return baseUrl;
+  }
+
+  return `${baseUrl}/api`;
+}
+
+const API_BASE_URL = normalizeApiBaseUrl(
+  import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.PROD ? "https://deskline.onrender.com/api" : "/api")
+);
 
 async function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
