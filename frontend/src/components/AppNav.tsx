@@ -17,14 +17,33 @@ export function AppNav() {
     notifications
   ]);
 
+  const refreshNotifications = (name = localStorage.getItem(employeeNameKey) ?? "") => {
+    const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      setNotifications([]);
+      return;
+    }
+
+    getNotifications(trimmedName)
+      .then((items) => setNotifications(items))
+      .catch(() => setNotifications([]));
+  };
+
   useEffect(() => {
-    const syncName = () => setEmployeeName(localStorage.getItem(employeeNameKey) ?? "");
+    const syncName = () => {
+      const name = localStorage.getItem(employeeNameKey) ?? "";
+      setEmployeeName(name);
+      refreshNotifications(name);
+    };
 
     window.addEventListener("deskline:name-updated", syncName);
+    window.addEventListener("deskline:notifications-refresh", syncName);
     window.addEventListener("storage", syncName);
 
     return () => {
       window.removeEventListener("deskline:name-updated", syncName);
+      window.removeEventListener("deskline:notifications-refresh", syncName);
       window.removeEventListener("storage", syncName);
     };
   }, []);
@@ -35,22 +54,15 @@ export function AppNav() {
       return;
     }
 
-    let isCurrent = true;
+    refreshNotifications(employeeName);
+    const intervalId = window.setInterval(() => refreshNotifications(employeeName), 10_000);
+    const onFocus = () => refreshNotifications(employeeName);
 
-    getNotifications(employeeName)
-      .then((items) => {
-        if (isCurrent) {
-          setNotifications(items);
-        }
-      })
-      .catch(() => {
-        if (isCurrent) {
-          setNotifications([]);
-        }
-      });
+    window.addEventListener("focus", onFocus);
 
     return () => {
-      isCurrent = false;
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", onFocus);
     };
   }, [employeeName]);
 
@@ -103,7 +115,10 @@ export function AppNav() {
           className="icon-button"
           type="button"
           aria-label="Notifications"
-          onClick={() => setIsOpen((current) => !current)}
+          onClick={() => {
+            refreshNotifications(employeeName);
+            setIsOpen((current) => !current);
+          }}
         >
           <Bell size={20} aria-hidden="true" />
           {unreadCount > 0 ? <span className="count-badge">{unreadCount}</span> : null}

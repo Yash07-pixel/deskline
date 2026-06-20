@@ -100,6 +100,7 @@ export function TicketDetailDrawer({ ticket, isOpen, onClose, onUpdated }: Ticke
         agent_response: responseText.trim(),
         internal_notes: internalNotes.trim()
       });
+      window.dispatchEvent(new Event("deskline:notifications-refresh"));
       onUpdated(updated);
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "Could not update ticket.");
