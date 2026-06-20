@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.env
+.env.local
+.vercel/
+.run-logs/
+
+backend/data/
+backend/data/*.sqlite*
+backend/dist/
+frontend/dist/
