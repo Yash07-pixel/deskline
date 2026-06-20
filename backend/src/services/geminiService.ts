@@ -1,12 +1,12 @@
 import { GoogleGenerativeAI, type GenerativeModel } from "@google/generative-ai";
 import type { Ticket, TicketCategory, TicketStatus } from "../db/schema.js";
 
-const modelName = process.env.GEMINI_MODEL ?? "gemini-1.5-flash";
+const fallbackModelNames = ["gemini-2.5-flash", "gemini-flash-latest"];
 const requestTimeoutMs = 10_000;
 const categories = ["IT", "HR", "Finance", "Admin"] as const;
 
 let genAI: GoogleGenerativeAI | null = null;
-let model: GenerativeModel | null = null;
+const modelCache = new Map<string, GenerativeModel>();
 
 interface SimilarTicketResult {
   matchId: number | null;
@@ -17,7 +17,7 @@ function isTicketCategory(value: string): value is TicketCategory {
   return categories.includes(value as TicketCategory);
 }
 
-function getGeminiModel(): GenerativeModel {
+function getGeminiModel(modelName: string): GenerativeModel {
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
@@ -25,7 +25,16 @@ function getGeminiModel(): GenerativeModel {
   }
 
   genAI ??= new GoogleGenerativeAI(apiKey);
-  model ??= genAI.getGenerativeModel({ model: modelName });
+
+  if (!modelCache.has(modelName)) {
+    modelCache.set(modelName, genAI.getGenerativeModel({ model: modelName }));
+  }
+
+  const model = modelCache.get(modelName);
+
+  if (!model) {
+    throw new Error(`Gemini model ${modelName} could not be initialized`);
+  }
 
   return model;
 }
@@ -47,8 +56,21 @@ async function withTimeout<T>(operation: Promise<T>, timeoutMs = requestTimeoutM
 }
 
 async function generateText(prompt: string): Promise<string> {
-  const result = await withTimeout(getGeminiModel().generateContent(prompt));
-  return result.response.text().trim();
+  const configuredModelName = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+  const modelsToTry = Array.from(new Set([configuredModelName, ...fallbackModelNames]));
+  let lastError: unknown;
+
+  for (const modelName of modelsToTry) {
+    try {
+      const result = await withTimeout(getGeminiModel(modelName).generateContent(prompt));
+      return result.response.text().trim();
+    } catch (error) {
+      lastError = error;
+      console.warn(`Gemini model ${modelName} failed; trying fallback if available`, error);
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("Gemini request failed");
 }
 
 function stripJsonMarkdown(text: string): string {
